@@ -285,6 +285,11 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = true,
+  },
   -- LSP Plugins
   {
     -- Main LSP Configuration
