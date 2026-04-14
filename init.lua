@@ -244,6 +244,16 @@ require('lazy').setup({
         function() Snacks.explorer() end,
         desc = 'File Explorer',
       },
+      {
+        '<leader><space>',
+        function() Snacks.picker.smart() end,
+        desc = 'Smart Find Files',
+      },
+      {
+        '<leader>:',
+        function() Snacks.picker.command_history() end,
+        desc = 'Command History',
+      },
     },
     priority = 1000,
     lazy = false,
