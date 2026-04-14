@@ -238,6 +238,13 @@ require('lazy').setup({
 
   {
     'folke/snacks.nvim',
+    keys = {
+      {
+        '<leader>e',
+        function() Snacks.explorer() end,
+        desc = 'File Explorer',
+      },
+    },
     priority = 1000,
     lazy = false,
     --@type snacks.Config
@@ -248,7 +255,16 @@ require('lazy').setup({
         size = 1.5 * 1024 * 1024, -- 1.5MB
         line_length = 1000,
       },
-      explorer = { enabled = true },
+      explorer = {
+        enabled = true,
+        replace_netrw = true,
+      },
+      picker = {
+        enabled = true,
+        sources = {
+          explorer = {},
+        },
+      },
       gh = { enabled = true },
       gitbrowse = {
         enabled = true,
