@@ -416,7 +416,13 @@ require('lazy').setup({
         csskit = {},
         diagnosticls = {},
         docker_language_server = {},
-        gopls = {},
+        gopls = {
+          completeUnimported = true,
+          usePlaceholders = true,
+          analyses = {
+            unusedparams = true,
+          },
+        },
         graphql = {},
         helm_ls = {},
         home_assistant = {},
