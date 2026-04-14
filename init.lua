@@ -3,8 +3,13 @@ vim.g.have_nerd_font = true
 
 -- Use space bar for leader
 vim.g.mapleader = ' '
-vim.g.relativenumber = true
-vim.g.number = true
+vim.o.relativenumber = true
+vim.o.number = true
+vim.o.expandtab = true
+vim.o.shiftwidth = 4
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.autoindent = true
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
