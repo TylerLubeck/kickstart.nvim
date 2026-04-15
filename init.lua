@@ -254,6 +254,47 @@ require('lazy').setup({
         function() Snacks.picker.command_history() end,
         desc = 'Command History',
       },
+      {
+        '<leader>ghpv',
+        function() Snacks.picker.gh_pr() end,
+        desc = '[g]it[h]ub [p]ull requests ([v]iew)',
+      },
+      {
+        '<leader>gho',
+        function() Snacks.gitbrowse.open() end,
+        desc = '[g]it[h]ub [o]pen',
+      },
+      {
+        '<leader>gb',
+        function() Snacks.git.blame_line() end,
+        desc = '[g]it [b]lame',
+      },
+      {
+        '<leader>Dti',
+        function()
+          if Snacks.indent.enabled then
+            Snacks.indent.disable()
+          else
+            Snacks.indent.enable()
+          end
+        end,
+        desc = '[D]isplay [t]oggle [i]ndent',
+      },
+      {
+        '<leader>gl',
+        function() Snacks.lazygit.open() end,
+        desc = '[g]it [l]azy',
+      },
+      {
+        '<leader>s',
+        function() Snacks.scratch() end,
+        desc = 'Toggle scratch buffer',
+      },
+      {
+        '<leader>S',
+        function() Snacks.scratch.select() end,
+        desc = 'Select scratch buffer',
+      },
     },
     priority = 1000,
     lazy = false,
@@ -273,6 +314,7 @@ require('lazy').setup({
         enabled = true,
         sources = {
           explorer = {},
+          gh_pr = {},
         },
       },
       gh = { enabled = true },
@@ -291,6 +333,21 @@ require('lazy').setup({
             commit = '/commit/{commit}',
             permalink = '/blob/{commit}/{file}#L{line_start}-L{line_end}',
           },
+        },
+      },
+      git = { enabled = true },
+      indent = { enabled = true },
+      lazygit = { enabled = true },
+      scratch = { enabled = true },
+      statuscolumn = {
+        enabled = true,
+        left = { 'fold', 'git' },
+        right = { 'mark', 'sign' },
+        folds = {
+          open = false,
+        },
+        git = {
+          patterns = { 'GitSign' },
         },
       },
     },
