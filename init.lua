@@ -492,7 +492,6 @@ require('lazy').setup({
         },
         graphql = {},
         helm_ls = {},
-        home_assistant = {},
         html = {},
         pyright = {},
         ruff = {},
