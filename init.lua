@@ -10,6 +10,7 @@ vim.o.shiftwidth = 4
 vim.o.tabstop = 4
 vim.o.softtabstop = 4
 vim.o.autoindent = true
+vim.opt.foldenable = false
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
@@ -116,12 +117,6 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
-
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -162,20 +157,6 @@ require('lazy').setup({
   -- NOTE: Plugins can be added via a link or github org/name. To run setup automatically, use `opts = {}`
   { 'NMAC427/guess-indent.nvim', opts = {} },
 
-  -- Alternatively, use `config = function() ... end` for full control over the configuration.
-  -- If you prefer to call `setup` explicitly, use:
-  --    {
-  --        'lewis6991/gitsigns.nvim',
-  --        config = function()
-  --            require('gitsigns').setup({
-  --                -- Your gitsigns configuration here
-  --            })
-  --        end,
-  --    }
-  --
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`.
-  --
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -225,6 +206,109 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
         { '<leader>m', group = '[M]arkdown', mode = { 'n' } },
+      },
+    },
+  },
+  {
+    'mfussenegger/nvim-dap',
+    keys = {
+      {
+        '<leader>db',
+        '<cmd>DapToggleBreakpoint<cr>',
+        desc = '[d]ebug [b]reakpoint toggle',
+      },
+      {
+        '<leader>dno',
+        '<cmd>DapStepOver<cr>',
+        desc = '[d]ebug [n]ext [o]ver',
+      },
+      {
+        '<leader>dni',
+        '<cmd>DapStepInto<cr>',
+        desc = '[d]ebug [n]ext [i]nto',
+      },
+      {
+        '<leader>dc',
+        '<cmd>DapContinue<cr>',
+        desc = '[d]ebug [c]ontinue',
+      },
+      {
+        '<leader>ds',
+        function() require('dap').continue() end,
+        desc = '[d]ebug [s]tart',
+      },
+    },
+  },
+  {
+    'leoluz/nvim-dap-go',
+    ft = 'go',
+    opts = {
+      dap_configurations = {
+        type = 'go',
+        name = 'Attach remote',
+        mode = 'remote',
+        request = 'attach',
+      },
+    },
+  },
+  {
+    'theHamsta/nvim-dap-virtual-text',
+    config = true,
+    dependencies = {
+      'mfussenegger/nvim-dap',
+    },
+  },
+  {
+    'rcarriga/nvim-dap-ui',
+    dependencies = {
+      'mfussenegger/nvim-dap',
+      'nvim-neotest/nvim-nio',
+    },
+    config = function()
+      local dap, dapui = require 'dap', require 'dapui'
+
+      dapui.setup()
+
+      dap.listeners.before.attach.dapui_config = function() dapui.open() end
+      dap.listeners.before.launch.dapui_config = function() dapui.open() end
+      dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
+      dap.listeners.before.event_exited.dapui_config = function() dapui.close() end
+    end,
+  },
+  {
+    'folke/lazydev.nvim',
+    opts = {
+      library = { 'nvim-dap-ui' },
+    },
+  },
+  {
+    'jeangiraldoo/codedocs.nvim',
+    keys = {
+      {
+        '<leader>cd',
+        '<cmd>Codedocs<cr>',
+        desc = 'add [c]ode [d]ocumentation',
+      },
+    },
+  },
+  {
+    'neolooong/whichpy.nvim',
+    ft = 'python',
+    opts = {},
+    dependencies = {
+      'mfussenegger/nvim-dap-python',
+      'folke/snacks.nvim',
+    },
+    keys = {
+      {
+        '<leader>ps',
+        '<cmd>WhichPy select<cr>',
+        desc = '[p]ython [s]elect interpreter',
+      },
+      {
+        '<leader>pr',
+        '<cmd>WhichPy reset<cr>',
+        desc = '[p]ython [r]eset interpreter',
       },
     },
   },
@@ -479,7 +563,7 @@ require('lazy').setup({
       ---@type table<string, vim.lsp.Config>
       local servers = {
         clangd = {},
-        cspell_ls = {},
+        codebook = {},
         csskit = {},
         diagnosticls = {},
         docker_language_server = {},
@@ -561,6 +645,7 @@ require('lazy').setup({
   },
   {
     'pmizio/typescript-tools.nvim',
+    ft = 'typescript',
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {},
   },
@@ -659,7 +744,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'super-tab',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -697,25 +782,37 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+  --[[ Catppuccin Theme
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    lazy = false,
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = true }, -- Disable italics in comments
+      require('catppuccin').setup {
+        flavour = 'mocha',
+        background = {
+          light = 'latte',
+          dark = 'mocha',
         },
       }
 
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'catppuccin'
+    end,
+  },
+  --]]
+  {
+    'Mofiqul/dracula.nvim',
+    name = 'dracula',
+    priority = 1000,
+    lazy = false,
+    config = function()
+      require('dracula').setup {
+        transparent_bg = true,
+        italic_comment = true,
+      }
+
+      vim.cmd.colorscheme 'dracula'
     end,
   },
 
@@ -897,6 +994,25 @@ require('lazy').setup({
     end,
     keys = {
       { '<leader>mpb', '<cmd>MarkdownPreviewToggle<cr>', desc = '[M]arkdown [p]review in [b]rowser' },
+    },
+  },
+  {
+    'pwntester/octo.nvim',
+    opts = {
+      picker = 'snacks',
+      enable_builtin = true,
+    },
+    keys = {
+      {
+        '<leader>gpr',
+        '<cmd>Octo pr list<cr>',
+        desc = 'List [g]ithub [p]ull [r]equests',
+      },
+    },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'folke/snacks.nvim',
+      'nvim-tree/nvim-web-devicons',
     },
   },
 
