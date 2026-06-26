@@ -89,7 +89,7 @@ vim.diagnostic.config {
   virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
-  jump = { float = true },
+  jump = { on_jump = vim.diagnostic.open_float },
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -173,6 +173,11 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'chomosuke/typst-preview.nvim',
+    lazy = false,
+    version = '1.*',
+  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -208,6 +213,10 @@ require('lazy').setup({
         { '<leader>m', group = '[M]arkdown', mode = { 'n' } },
       },
     },
+    config = function(_, opts)
+      local wk = require 'which-key'
+      wk.setup(opts)
+    end,
   },
   {
     'mfussenegger/nvim-dap',
@@ -419,8 +428,10 @@ require('lazy').setup({
           },
         },
       },
+      notifier = { enabled = true },
       git = { enabled = true },
       indent = { enabled = true },
+      image = { enabled = true },
       lazygit = { enabled = true },
       scratch = { enabled = true },
       statuscolumn = {
@@ -461,7 +472,11 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim', opts = {
+        notification = {
+          override_vim_notify = true,
+        },
+      } },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -508,15 +523,18 @@ require('lazy').setup({
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
-          map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
+          map('<leader>crn', vim.lsp.buf.rename, '[R]e[n]ame')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+          map('<leader>cra', vim.lsp.buf.code_action, '[C]ode [r]un [a]ction', { 'n', 'x' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
-          map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          map('<leader>crD', vim.lsp.buf.declaration, '[C]ode: [G]oto [D]eclaration')
+          map('<leader>crd', vim.lsp.buf.definition, '[C]ode: [G]oto [d]efinition')
+
+          map('<leader>ch', vim.diagnostic.open_float, '[C]ode: Show [H]int')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -582,6 +600,7 @@ require('lazy').setup({
         rust_analyzer = {},
         sqlls = {},
         terraformls = {},
+        tinymist = {},
         yamlls = {},
 
         --
